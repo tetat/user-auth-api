@@ -1,0 +1,46 @@
+require("dotenv").config();
+const mongoose = require("mongoose");
+const { isEmail } = require("validator");
+const bcrypt = require("bcrypt");
+
+const userSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: [true, "Please enter your first name"],
+    minlength: [2, "Minimum length of first name must be 2 characters long"],
+  },
+  lastName: {
+    type: String,
+    required: [true, "Please enter your last name"],
+    minlength: [2, "Minimum length of last name must be 2 characters long"],
+  },
+  userName: {
+    type: String,
+    required: [true, "Please enter your user name"],
+    minlength: [4, "Minimum length of user name must be 4 characters long"],
+  },
+  email: {
+    type: String,
+    required: [true, "Please enter an email"],
+    uniqure: true,
+    lowercase: true,
+    validate: [isEmail, "Please enter a valid email"],
+  },
+  password: {
+    type: String,
+    required: [true, "Please enter password"],
+    minlength: [6, "Minimum password length is 6 characters"],
+  },
+});
+
+// function to encrypt password before doc save
+userSchema.pre("save", async function (next) {
+  const salt_round = parseInt(process.env.SALT_ROUND);
+  const salt = await bcrypt.genSalt(salt_round);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+const User = mongoose.model("user", userSchema);
+
+module.exports = User;

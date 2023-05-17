@@ -1,0 +1,54 @@
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+
+const User = require("../models/User");
+
+const checkUser = (req, res, next) => {
+  const token = req.cookies.jwt;
+
+  if (!token) {
+    res.locals.user = null;
+    next();
+  } else {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+      if (err) {
+        res.locals.user = null;
+        next();
+      } else {
+        // console.log(decodedToken.userName);
+        const user = await User.findOne({ userName: decodedToken.userName });
+        res.locals.user = user;
+        next();
+      }
+    });
+  }
+};
+
+const validToken = (token) => {
+  let result = false;
+  if (!token) return result;
+  jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+    if (!err) {
+      // console.log(err.message);
+      result = true;
+    }
+  });
+  return result;
+};
+
+const isUser = (req, res, next) => {
+  const token = req.cookies.jwt;
+  const result = validToken(token);
+  // console.log(result);
+  if (!result) res.redirect("/login");
+  else next();
+};
+
+const isNotUser = (req, res, next) => {
+  const token = req.cookies.jwt;
+  const result = validToken(token);
+  if (result) res.redirect("/");
+  else next();
+};
+
+module.exports = { isUser, isNotUser, checkUser };

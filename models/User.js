@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
 // function to encrypt password before doc save
 userSchema.pre("save", async function (next) {
   const salt_round = parseInt(process.env.SALT_ROUND);
-  const salt = await bcrypt.genSalt(salt_round);
+  const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });

@@ -40,13 +40,23 @@ const createToken = (userName) => {
   });
 };
 
+module.exports.signup_get = (req, res) => {
+  res.render("signup");
+};
+
+module.exports.login_get = (req, res) => {
+  res.render("login");
+};
+
 module.exports.all_user = async (req, res) => {
+  // _id, __v, & password is not allowed to access
   const users = await User.find({}).select({
     _id: 0,
     __v: 0,
     password: 0,
   });
-  res.status(201).json({ users });
+  res.locals.users = users;
+  res.render("users");
 };
 
 module.exports.sign_up = async (req, res) => {
@@ -61,8 +71,8 @@ module.exports.sign_up = async (req, res) => {
       password: password.trim(),
     });
     const token = createToken(user.userName);
-    res.cookie("jwt", token, { httpOnly: true, tokenAge: tokenAge * 1000 });
-    res.status(201).send("Signup success");
+    res.cookie("jwt", token, { httpOnly: true, maxAge: tokenAge * 1000 });
+    res.status(201).json({ userName: user.userName });
   } catch (err) {
     const errors = handleErrors(err);
     res.status(400).json({ errors });
@@ -75,10 +85,15 @@ module.exports.log_in = async (req, res) => {
   try {
     const user = await User.login(email.trim(), password.trim());
     const token = createToken(user.userName);
-    res.cookie("jwt", token, { httpOnly: true, tokenAge: tokenAge * 1000 });
-    res.status(201).send("Login success");
+    res.cookie("jwt", token, { httpOnly: true, maxAge: tokenAge * 1000 });
+    res.status(201).json({ userName: user.userName });
   } catch (err) {
     const errors = handleErrors(err);
     res.status(400).json({ errors });
   }
+};
+
+module.exports.log_out = (req, res) => {
+  res.cookie("jwt", "", { maxAge: 1 });
+  res.redirect("/");
 };

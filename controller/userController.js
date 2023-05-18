@@ -3,11 +3,12 @@ const User = require("../models/User");
 
 const tokenAge = 24 * 60 * 60;
 
+// get all users. method: GET
 module.exports.users = async (req, res) => {
   const users = await all_user();
   res.status(201).json(users);
 };
-
+// get a user with userName. method: GET
 module.exports.user = async (req, res) => {
   const userName = req.params.userName;
   const user = await User.findOne({ userName }).select({
@@ -21,7 +22,7 @@ module.exports.user = async (req, res) => {
     res.status(400).json({ userName: "user name not valid" });
   }
 };
-
+// create and store user in db. method: POST
 module.exports.sign_up = async (req, res) => {
   const { firstName, lastName, userName, email, password } = req.body;
 
@@ -41,7 +42,7 @@ module.exports.sign_up = async (req, res) => {
     res.status(400).json({ errors });
   }
 };
-
+// login user. method: POST
 module.exports.log_in = async (req, res) => {
   const { email, password } = req.body;
 
@@ -55,12 +56,30 @@ module.exports.log_in = async (req, res) => {
     res.status(400).json({ errors });
   }
 };
-
+// update a user info. method: PATCH
+module.exports.update_user = async (req, res) => {
+  if (req.body) {
+    const updates = req.body;
+    if (updates.email || updates.password) {
+      res
+        .status(403)
+        .json({ error: "updating email & password is not allowed" });
+    } else {
+      const result = await User.updateOne(
+        { userName: req.params.userName },
+        { $set: updates }
+      );
+      console.log(result);
+      res.status(201).json({ result });
+    }
+  }
+};
+// delete a user from db. method: DELETE
 module.exports.delete_user = async (req, res) => {
   const userName = req.params.userName;
-  const user = await User.deleteOne({ userName });
-  if (user.deletedCount) {
+  const result = await User.deleteOne({ userName });
+  if (result.deletedCount) {
     res.cookie("jwt", "", { maxAge: 1 });
   }
-  res.status(201).json({ user });
+  res.status(201).json({ result });
 };

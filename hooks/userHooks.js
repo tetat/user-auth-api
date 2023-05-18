@@ -15,6 +15,13 @@ const all_user = async () => {
   return users;
 };
 
+// create token
+const createToken = (userName) => {
+  return jwt.sign({ userName }, process.env.JWT_SECRET, {
+    expiresIn: tokenAge,
+  });
+};
+
 const handleErrors = (err) => {
   const errors = {};
 
@@ -41,13 +48,6 @@ const handleErrors = (err) => {
   }
 
   return errors;
-};
-
-// create token
-const createToken = (userName) => {
-  return jwt.sign({ userName }, process.env.JWT_SECRET, {
-    expiresIn: tokenAge,
-  });
 };
 
 module.exports = {

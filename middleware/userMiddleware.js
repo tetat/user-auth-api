@@ -3,27 +3,6 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 
-const checkUser = (req, res, next) => {
-  const token = req.cookies.jwt;
-
-  if (!token) {
-    res.locals.user = null;
-    next();
-  } else {
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
-      if (err) {
-        res.locals.user = null;
-        next();
-      } else {
-        // console.log(decodedToken.userName);
-        const user = await User.findOne({ userName: decodedToken.userName });
-        res.locals.user = user;
-        next();
-      }
-    });
-  }
-};
-
 const validToken = (token) => {
   let result = false;
   if (!token) return result;
@@ -62,6 +41,27 @@ const isMe = (req, res, next) => {
   });
   if (deleteUser) next();
   else res.redirect("/");
+};
+
+const checkUser = (req, res, next) => {
+  const token = req.cookies.jwt;
+
+  if (!token) {
+    res.locals.user = null;
+    next();
+  } else {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+      if (err) {
+        res.locals.user = null;
+        next();
+      } else {
+        // console.log(decodedToken.userName);
+        const user = await User.findOne({ userName: decodedToken.userName });
+        res.locals.user = user;
+        next();
+      }
+    });
+  }
 };
 
 module.exports = { isUser, isNotUser, checkUser, isMe };

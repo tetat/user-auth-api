@@ -17,6 +17,7 @@ router.get("/users", isUser, userController.users);
 router.get("/users/:userName", isUser, userController.user);
 router.post("/signup", userController.sign_up);
 router.post("/login", userController.log_in);
+router.patch("/update/:userName", isUser, isMe, userController.update_user);
 router.delete("/delete/:userName", isUser, isMe, userController.delete_user);
 
 module.exports = router;

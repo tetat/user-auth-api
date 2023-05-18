@@ -51,4 +51,17 @@ const isNotUser = (req, res, next) => {
   else next();
 };
 
-module.exports = { isUser, isNotUser, checkUser };
+const isMe = (req, res, next) => {
+  const requestedUserName = req.params.userName;
+  const token = req.cookies.jwt;
+  let deleteUser = false;
+  jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+    if (requestedUserName === decodedToken.userName) {
+      deleteUser = true;
+    }
+  });
+  if (deleteUser) next();
+  else res.redirect("/");
+};
+
+module.exports = { isUser, isNotUser, checkUser, isMe };

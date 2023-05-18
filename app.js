@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 
 const router = require("./routes/userRoutes");
-const { checkUser, isUser } = require("./middleware/userMiddleware");
+const { checkUser } = require("./middleware/userMiddleware");
 
 const app = express();
 dotenv.config();

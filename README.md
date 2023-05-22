@@ -18,13 +18,13 @@ User Authentication API is a simple backend project for future use. This is like
 [http://localhost:3000/users]
 
 ### Get a user (method: GET)
-userName is User Name. See the picture below Demo Users to clear understanding  
+userName is User Name. See the picture below Demo Users to clear understanding.  
 [http://localhost:3000/users/userName]
 
 ### Update a user (method: PATCH)
-You need to login before update and you can only update your profile info.  
+You need to login before update and you can update your profile info only you.  
 [http://localhost:3000/update/userName]
 
-### Delete your profiel. (method: DELETE)
-You need to login before delete and you can only delete your profile.  
+### Delete your profile. (method: DELETE)
+You need to login before delete and you can delete your profile only you.  
 [http://localhost:3000/delete/userName]

@@ -13,8 +13,3 @@ module.exports.demo = async (req, res) => {
   res.locals.users = users;
   res.render("demo");
 };
-
-module.exports.log_out = (req, res) => {
-  res.cookie("jwt", "", { maxAge: 1 });
-  res.redirect("/");
-};

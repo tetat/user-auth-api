@@ -3,6 +3,46 @@ const User = require("../models/User");
 
 const tokenAge = 24 * 60 * 60;
 
+// create and store user in db. method: POST
+module.exports.sign_up = async (req, res) => {
+  const { firstName, lastName, userName, email, password } = req.body;
+
+  try {
+    const user = await User.create({
+      firstName,
+      lastName,
+      userName,
+      email,
+      password,
+    });
+    const token = createToken(user.userName);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: tokenAge * 1000 });
+    res.status(201).json({ userName: user.userName });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({ errors });
+  }
+};
+// login user. method: POST
+module.exports.log_in = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.login(email, password);
+    const token = createToken(user.userName);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: tokenAge * 1000 });
+    res.status(201).json({ userName: user.userName });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({ errors });
+  }
+};
+// log out. method: GET
+module.exports.log_out = (req, res) => {
+  res.cookie("jwt", "", { maxAge: 1 });
+  res.redirect("/");
+};
+
 // get all users. method: GET
 module.exports.users = async (req, res) => {
   const users = await all_user();
@@ -20,40 +60,6 @@ module.exports.user = async (req, res) => {
     res.status(201).json(user);
   } else {
     res.status(400).json({ userName: "user name not valid" });
-  }
-};
-// create and store user in db. method: POST
-module.exports.sign_up = async (req, res) => {
-  const { firstName, lastName, userName, email, password } = req.body;
-
-  try {
-    const user = await User.create({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      userName: userName.trim(),
-      email: email.trim(),
-      password: password.trim(),
-    });
-    const token = createToken(user.userName);
-    res.cookie("jwt", token, { httpOnly: true, maxAge: tokenAge * 1000 });
-    res.status(201).json({ userName: user.userName });
-  } catch (err) {
-    const errors = handleErrors(err);
-    res.status(400).json({ errors });
-  }
-};
-// login user. method: POST
-module.exports.log_in = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.login(email.trim(), password.trim());
-    const token = createToken(user.userName);
-    res.cookie("jwt", token, { httpOnly: true, maxAge: tokenAge * 1000 });
-    res.status(201).json({ userName: user.userName });
-  } catch (err) {
-    const errors = handleErrors(err);
-    res.status(400).json({ errors });
   }
 };
 // update a user info. method: PATCH

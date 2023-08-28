@@ -4,13 +4,8 @@
   "description": "user authentication api template",
   "main": "app.js",
   "scripts": {
-    "build": "",
-    "serve": "firebase serve --only functions",
-    "shell": "firebase functions:shell",
-    "start": "nodemon app.js",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
